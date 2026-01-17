@@ -43,6 +43,10 @@ export interface ResetPasswordResponse extends BaseResponse {
   data: null;
 }
 
+export interface ChangePasswordResponse extends BaseResponse {
+  data: null;
+}
+
 export interface AuditLog {
   id: string;
   userId: string;
@@ -96,4 +100,6 @@ export const authService = {
     ),
   resetPassword: (data: { accessToken: string; newPassword: string }) =>
     apiClient.post<ResetPasswordResponse>("/auth/reset-password", data),
+  changePassword: (data: { currentPassword: string; newPassword: string }) =>
+    apiClient.patch<ChangePasswordResponse>("/auth/change-password", data),
 };

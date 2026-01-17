@@ -9,6 +9,7 @@ import Login from "./modules/auth/pages/login";
 import Logout from "./modules/auth/pages/logout";
 import Profile from "./modules/auth/pages/profile";
 import EditProfile from "./modules/auth/pages/profile/edit";
+import ChangePassword from "./modules/auth/pages/profile/change-password";
 
 export const router = createBrowserRouter([
   {
@@ -42,6 +43,10 @@ export const router = createBrowserRouter([
           {
             path: "/dashboard/profile/edit",
             element: <EditProfile />,
+          },
+          {
+            path: "/dashboard/profile/change-password",
+            element: <ChangePassword />,
           },
           {
             path: "/dashboard/users/create",

@@ -1,4 +1,4 @@
-import { LogoutOutlined, UserOutlined } from "@ant-design/icons";
+import { KeyOutlined, LogoutOutlined, UserOutlined } from "@ant-design/icons";
 import { Avatar, Dropdown, Space, type MenuProps } from "antd";
 import { Link } from "react-router";
 import { useProfile } from "../hooks/use-auth";
@@ -19,6 +19,11 @@ const items: MenuProps["items"] = [
   },
   {
     key: "3",
+    icon: <KeyOutlined />,
+    label: <Link to="/dashboard/profile/change-password">Change Password</Link>,
+  },
+  {
+    key: "4",
     icon: <LogoutOutlined />,
     danger: true,
     label: <Link to="/dashboard/logout">Logout</Link>,
@@ -32,7 +37,7 @@ export default function UserAvatar() {
       <a onClick={(e) => e.preventDefault()}>
         <Space>
           <Avatar
-            size="large"
+            size={40}
             src={data?.data?.profileImageUrl || ""}
             icon={<UserOutlined />}
             className="border-4 border-gray-100"

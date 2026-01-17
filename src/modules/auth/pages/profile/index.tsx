@@ -20,18 +20,38 @@ import {
   Space,
   Flex,
   Button,
+  Popconfirm,
+  App,
 } from "antd";
-import type { TabsProps } from "antd";
-import { useProfile } from "../../hooks/use-auth";
+import type { PopconfirmProps, TabsProps } from "antd";
+import { useLogout, useProfile } from "../../hooks/use-auth";
 import { formatDate, formatDateTime } from "../../../../lib/date-utils";
 
 import { useNavigate } from "react-router";
+import { useDeleteUser } from "../../hooks/use-user";
 
 const { Title, Text } = Typography;
 
 export default function Profile() {
   const navigate = useNavigate();
   const { data, isLoading } = useProfile();
+  const { message } = App.useApp();
+  const { mutate: deleteUser } = useDeleteUser();
+  const logout = useLogout();
+
+  const confirmDelete: PopconfirmProps["onConfirm"] = () => {
+    if (!data?.data.id) {
+      message.error("User ID not found");
+      return;
+    }
+    deleteUser(data?.data.id);
+    message.success("Account deleted successfully");
+    logout();
+  };
+
+  const cancelDelete: PopconfirmProps["onCancel"] = () => {
+    message.info("Cancel Account Delete");
+  };
 
   // Cast data to UserWithRole since the hook return type might be generic
   const user = data?.data;
@@ -103,6 +123,15 @@ export default function Profile() {
               {user.twoFactorEnabled ? "Enabled" : "Disabled"}
             </Tag>
           </Descriptions.Item>
+          <Descriptions.Item label="Password">
+            <Button
+              type="link"
+              className="p-0"
+              onClick={() => navigate("change-password")}
+            >
+              Change Password
+            </Button>
+          </Descriptions.Item>
         </Descriptions>
       ),
     },
@@ -136,9 +165,18 @@ export default function Profile() {
                 >
                   Edit
                 </Button>
-                <Button icon={<DeleteOutlined />} danger>
-                  Delete
-                </Button>
+                <Popconfirm
+                  title="Delete the account"
+                  description="Are you sure to delete the account? This process cannot be undone."
+                  onConfirm={confirmDelete}
+                  onCancel={cancelDelete}
+                  okText="Yes"
+                  cancelText="No"
+                >
+                  <Button icon={<DeleteOutlined />} danger>
+                    Delete
+                  </Button>
+                </Popconfirm>
               </Flex>
             </div>
           </Card>

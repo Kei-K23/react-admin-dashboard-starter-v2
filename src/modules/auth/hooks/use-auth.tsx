@@ -24,6 +24,7 @@ export const useForgotPasswordVerify = createMutationHook(
   authService.forgotPasswordVerify
 );
 export const useResetPassword = createMutationHook(authService.resetPassword);
+export const useChangePassword = createMutationHook(authService.changePassword);
 
 export const useProfile = createQueryHook<GetProfileResponse>(
   ["auth", "profile"],
