@@ -10,14 +10,14 @@ const PERMISSION_MODULES = {
 export type PermissionModuleEnum =
   (typeof PERMISSION_MODULES)[keyof typeof PERMISSION_MODULES];
 
-const PermissionEnum = {
+const PERMISSION_ENUM = {
   Create: "CREATE",
   Delete: "DELETE",
   Read: "READ",
   Update: "UPDATE",
 } as const;
 export type PermissionEnum =
-  (typeof PermissionEnum)[keyof typeof PermissionEnum];
+  (typeof PERMISSION_ENUM)[keyof typeof PERMISSION_ENUM];
 
 const appName = import.meta.env.VITE_APP_NAME?.toLowerCase() || "app";
 const ACCESS_TOKEN_KEY = `${appName}_accessToken`;
@@ -30,6 +30,7 @@ export {
   PERMISSION_MODULES,
   ACCESS_TOKEN_KEY,
   REFRESH_TOKEN_KEY,
+  PERMISSION_ENUM,
   BASE_URL,
   API_APP_KEY,
 };

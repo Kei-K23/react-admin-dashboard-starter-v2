@@ -18,6 +18,8 @@ import {
 import { Link, Outlet, useLocation, useNavigate } from "react-router";
 import { navigationConfig, type NavigationItem } from "../config/navigation";
 import UserAvatar from "../modules/auth/components/user-avatar";
+import { useProfile } from "../modules/auth/hooks/use-auth";
+import { hasPermission } from "../modules/auth/hooks/use-role-and-permissions";
 
 const { Header, Content, Footer, Sider } = Layout;
 const { useBreakpoint } = Grid;
@@ -31,6 +33,9 @@ export default function MainDashboardLayout() {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
+  const { data: profileData } = useProfile();
+  const user = profileData?.data;
+
   const screens = useBreakpoint();
   const isMobile = !screens.lg;
 
@@ -39,21 +44,45 @@ export default function MainDashboardLayout() {
 
   // Close mobile drawer on route change
   useEffect(() => {
-    if (mobileDrawerOpen) {
-      setMobileDrawerOpen(false);
-    }
+    // eslint-disable-next-line
+    setMobileDrawerOpen(false);
   }, [location]);
 
   const menuItems = useMemo(() => {
-    const mapItems = (items: NavigationItem[]): MenuItem[] =>
-      items.map((item) => ({
-        key: item.path || item.key,
-        icon: item.icon,
-        label: item.title,
-        children: item.children ? mapItems(item.children) : undefined,
-      }));
+    const mapItems = (items: NavigationItem[]): MenuItem[] => {
+      return items
+        .filter((item) => {
+          if (item.permission) {
+            return hasPermission(
+              user,
+              item.permission.module,
+              item.permission.type,
+            );
+          }
+          return true;
+        })
+        .map((item) => {
+          const children = item.children ? mapItems(item.children) : undefined;
+
+          // If item has children definition but all filtered out, return null (hide parent)
+          // unless it's a leaf node that just happened to not have children in the first place?
+          // Actually if item.children exists but is empty array after filtering, we might want to hide it
+          // if it acts as a group folder.
+          if (item.children && (!children || children.length === 0)) {
+            return null;
+          }
+
+          return {
+            key: item.path || item.key,
+            icon: item.icon,
+            label: item.title,
+            children: children,
+          };
+        })
+        .filter((item) => item !== null) as MenuItem[];
+    };
     return mapItems(navigationConfig);
-  }, []);
+  }, [user]);
 
   const handleMenuClick: MenuProps["onClick"] = ({ key }) => {
     if (key.startsWith("/")) {
@@ -196,7 +225,7 @@ export default function MainDashboardLayout() {
           </div>
         </Content>
         <Footer style={{ textAlign: "center" }}>
-          Ant Design ©{new Date().getFullYear()} Created by Ant UED
+          RADTv2 ©{new Date().getFullYear()} Created by Arkar Min
         </Footer>
       </Layout>
     </Layout>

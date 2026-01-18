@@ -20,12 +20,19 @@ import { useNavigate } from "react-router";
 import {
   useGetAllRoles,
   useDeleteRole,
+  hasPermission,
 } from "../../hooks/use-role-and-permissions";
 import type { ColumnsType } from "antd/es/table";
 import type { Role } from "../../services/role-and-permissions.service";
 import { formatDate } from "../../../../lib/date-utils";
+import {
+  PERMISSION_ENUM,
+  PERMISSION_MODULES,
+} from "../../../../common/constraints";
+import { useProfile } from "../../hooks/use-auth";
 
 export default function RolesPermissions() {
+  const { data: profileData } = useProfile();
   const navigate = useNavigate();
   const { message } = App.useApp();
   const [page, setPage] = useState(1);
@@ -95,27 +102,40 @@ export default function RolesPermissions() {
       key: "actions",
       render: (_, record) => (
         <Space>
-          <Tooltip title="Edit">
-            <Button
-              type="text"
-              icon={<EditOutlined />}
-              onClick={() =>
-                navigate(`/dashboard/roles-permissions/edit/${record.id}`)
-              }
-            />
-          </Tooltip>
-          <Tooltip title="Delete">
-            <Popconfirm
-              title="Delete Role"
-              description="Are you sure you want to delete this role? This might affect users assigned to this role."
-              onConfirm={() => handleDelete(record.id)}
-              okText="Yes"
-              cancelText="No"
-              okButtonProps={{ danger: true, loading: isDeleting }}
-            >
-              <Button type="text" danger icon={<DeleteOutlined />} />
-            </Popconfirm>
-          </Tooltip>
+          {hasPermission(
+            profileData?.data,
+            PERMISSION_MODULES.ROLES,
+            PERMISSION_ENUM.Update,
+          ) && (
+            <Tooltip title="Edit">
+              <Button
+                type="text"
+                icon={<EditOutlined />}
+                onClick={() =>
+                  navigate(`/dashboard/roles-permissions/edit/${record.id}`)
+                }
+              />
+            </Tooltip>
+          )}
+
+          {hasPermission(
+            profileData?.data,
+            PERMISSION_MODULES.ROLES,
+            PERMISSION_ENUM.Delete,
+          ) && (
+            <Tooltip title="Delete">
+              <Popconfirm
+                title="Delete Role"
+                description="Are you sure you want to delete this role? This might affect users assigned to this role."
+                onConfirm={() => handleDelete(record.id)}
+                okText="Yes"
+                cancelText="No"
+                okButtonProps={{ danger: true, loading: isDeleting }}
+              >
+                <Button type="text" danger icon={<DeleteOutlined />} />
+              </Popconfirm>
+            </Tooltip>
+          )}
         </Space>
       ),
     },
@@ -135,13 +155,19 @@ export default function RolesPermissions() {
           >
             Refresh
           </Button>
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => navigate("/dashboard/roles-permissions/create")}
-          >
-            Create Role
-          </Button>
+          {hasPermission(
+            profileData?.data,
+            PERMISSION_MODULES.ROLES,
+            PERMISSION_ENUM.Create,
+          ) && (
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => navigate("/dashboard/roles-permissions/create")}
+            >
+              Create Role
+            </Button>
+          )}
         </Space>
       }
     >

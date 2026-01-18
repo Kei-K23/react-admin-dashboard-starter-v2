@@ -14,16 +14,28 @@ import Logout from "./modules/auth/pages/logout";
 import Profile from "./modules/auth/pages/profile";
 import EditProfile from "./modules/auth/pages/profile/edit";
 import ChangePassword from "./modules/auth/pages/profile/change-password";
+import { PermissionsGuard } from "./components/permissions-guard";
+import { AuthGuard } from "./components/auth-guard";
+import { GuestGuard } from "./components/guest-guard";
+import { PERMISSION_ENUM, PERMISSION_MODULES } from "./common/constraints";
 
 export const router = createBrowserRouter([
   {
     path: "/login",
-    element: <Login />,
+    element: (
+      <GuestGuard>
+        <Login />
+      </GuestGuard>
+    ),
   },
 
   {
     path: "/dashboard",
-    element: <MainDashboardLayout />,
+    element: (
+      <AuthGuard>
+        <MainDashboardLayout />
+      </AuthGuard>
+    ),
     children: [
       {
         path: "/dashboard",
@@ -34,7 +46,14 @@ export const router = createBrowserRouter([
         children: [
           {
             path: "/dashboard/users",
-            element: <Users />,
+            element: (
+              <PermissionsGuard
+                module={PERMISSION_MODULES.USERS}
+                permission={PERMISSION_ENUM.Read}
+              >
+                <Users />
+              </PermissionsGuard>
+            ),
           },
           {
             path: "/dashboard/logout",
@@ -54,31 +73,80 @@ export const router = createBrowserRouter([
           },
           {
             path: "/dashboard/users/create",
-            element: <UserCreate />,
+            element: (
+              <PermissionsGuard
+                module={PERMISSION_MODULES.USERS}
+                permission={PERMISSION_ENUM.Create}
+              >
+                <UserCreate />
+              </PermissionsGuard>
+            ),
           },
           {
             path: "/dashboard/users/edit/:id",
-            element: <UserEdit />,
+            element: (
+              <PermissionsGuard
+                module={PERMISSION_MODULES.USERS}
+                permission={PERMISSION_ENUM.Update}
+              >
+                <UserEdit />
+              </PermissionsGuard>
+            ),
           },
           {
             path: "/dashboard/roles-permissions",
-            element: <RolesPermissions />,
+            element: (
+              <PermissionsGuard
+                module={PERMISSION_MODULES.ROLES}
+                permission={PERMISSION_ENUM.Read}
+              >
+                <RolesPermissions />
+              </PermissionsGuard>
+            ),
           },
           {
             path: "/dashboard/roles-permissions/create",
-            element: <RolesPermissionsCreate />,
+            element: (
+              <PermissionsGuard
+                module={PERMISSION_MODULES.ROLES}
+                permission={PERMISSION_ENUM.Create}
+              >
+                <RolesPermissionsCreate />
+              </PermissionsGuard>
+            ),
           },
           {
             path: "/dashboard/roles-permissions/edit/:id",
-            element: <RolesPermissionsEdit />,
+            element: (
+              <PermissionsGuard
+                module={PERMISSION_MODULES.ROLES}
+                permission={PERMISSION_ENUM.Update}
+              >
+                <RolesPermissionsEdit />
+              </PermissionsGuard>
+            ),
           },
           {
             path: "/dashboard/audit-logs",
-            element: <AuditLogs />,
+            element: (
+              <PermissionsGuard
+                module={PERMISSION_MODULES.ACTIVITY_LOGS}
+                permission={PERMISSION_ENUM.Read}
+              >
+                <AuditLogs />
+              </PermissionsGuard>
+            ),
           },
           {
             path: "/dashboard/activity-logs",
-            element: <ActivityLogs />,
+            element: (
+              <PermissionsGuard
+                module={PERMISSION_MODULES.ACTIVITY_LOGS}
+                permission={PERMISSION_ENUM.Read}
+              >
+                <ActivityLogs />
+              </PermissionsGuard>
+            ),
           },
         ],
       },

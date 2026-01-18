@@ -22,13 +22,22 @@ import {
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useGetAllUsers, useDeleteUser } from "../../hooks/use-user";
-import { useGetAllRoles } from "../../hooks/use-role-and-permissions";
+import {
+  hasPermission,
+  useGetAllRoles,
+} from "../../hooks/use-role-and-permissions";
 import type { ColumnsType } from "antd/es/table";
 import type { UserWithRole } from "../../services/user.service";
 import { formatDate } from "../../../../lib/date-utils";
 import { useDebounce } from "../../../../hooks/use-debounce.ts";
+import { useProfile } from "../../hooks/use-auth.tsx";
+import {
+  PERMISSION_ENUM,
+  PERMISSION_MODULES,
+} from "../../../../common/constraints.ts";
 
 export default function Users() {
+  const { data: profileData } = useProfile();
   const navigate = useNavigate();
   const { message } = App.useApp();
   const [search, setSearch] = useState("");
@@ -116,25 +125,37 @@ export default function Users() {
       key: "actions",
       render: (_, record) => (
         <Space>
-          <Tooltip title="Edit">
-            <Button
-              type="text"
-              icon={<EditOutlined />}
-              onClick={() => navigate(`/dashboard/users/edit/${record.id}`)} // Note: This route needs to be created
-            />
-          </Tooltip>
-          <Tooltip title="Delete">
-            <Popconfirm
-              title="Delete User"
-              description="Are you sure you want to delete this user?"
-              onConfirm={() => handleDelete(record.id)}
-              okText="Yes"
-              cancelText="No"
-              okButtonProps={{ danger: true, loading: isDeleting }}
-            >
-              <Button type="text" danger icon={<DeleteOutlined />} />
-            </Popconfirm>
-          </Tooltip>
+          {hasPermission(
+            profileData?.data,
+            PERMISSION_MODULES.USERS,
+            PERMISSION_ENUM.Update,
+          ) && (
+            <Tooltip title="Edit">
+              <Button
+                type="text"
+                icon={<EditOutlined />}
+                onClick={() => navigate(`/dashboard/users/edit/${record.id}`)} // Note: This route needs to be created
+              />
+            </Tooltip>
+          )}
+          {hasPermission(
+            profileData?.data,
+            PERMISSION_MODULES.USERS,
+            PERMISSION_ENUM.Delete,
+          ) && (
+            <Tooltip title="Delete">
+              <Popconfirm
+                title="Delete User"
+                description="Are you sure you want to delete this user?"
+                onConfirm={() => handleDelete(record.id)}
+                okText="Yes"
+                cancelText="No"
+                okButtonProps={{ danger: true, loading: isDeleting }}
+              >
+                <Button type="text" danger icon={<DeleteOutlined />} />
+              </Popconfirm>
+            </Tooltip>
+          )}
         </Space>
       ),
     },
@@ -150,13 +171,19 @@ export default function Users() {
           <Button icon={<ReloadOutlined />} onClick={() => refetch()}>
             Refresh
           </Button>
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => navigate("create")}
-          >
-            Create User
-          </Button>
+          {hasPermission(
+            profileData?.data,
+            PERMISSION_MODULES.USERS,
+            PERMISSION_ENUM.Create,
+          ) && (
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => navigate("create")}
+            >
+              Create User
+            </Button>
+          )}
         </Space>
       }
     >
