@@ -56,7 +56,7 @@ export interface UserWithRole {
 
 export const userService = {
   getAllUsers: (params?: GetAllUsersParams) =>
-    apiClient.get<GetAllUsersResponse>("/users", { params }),
+    apiClient.get<GetAllUsersResponse>("/users", params),
 
   getUserById: (params: { id: string }) =>
     apiClient.get<GetUserResponse>(`/users/${params.id}`),

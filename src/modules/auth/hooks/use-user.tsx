@@ -25,4 +25,6 @@ export const useDeleteUser = createMutationHook(userService.deleteUser, {
   invalidateQueries: [["users"]],
 });
 
-export const useUpdateUser = createMutationHook(userService.updateUser);
+export const useUpdateUser = createMutationHook(userService.updateUser, {
+  invalidateQueries: [["users"]],
+});

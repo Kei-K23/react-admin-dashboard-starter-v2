@@ -28,7 +28,10 @@ export const useGetAllPermissions = createQueryHook<GetAllPermissionsResponse>(
 );
 
 export const useCreateRole = createMutationHook(
-  roleAndPermissionsService.createRole
+  roleAndPermissionsService.createRole,
+  {
+    invalidateQueries: [["roles"]],
+  }
 );
 
 export const useDeleteRole = createMutationHook(
@@ -39,7 +42,10 @@ export const useDeleteRole = createMutationHook(
 );
 
 export const useUpdateRole = createMutationHook(
-  roleAndPermissionsService.updateRole
+  roleAndPermissionsService.updateRole,
+  {
+    invalidateQueries: [["roles"]],
+  }
 );
 
 export const hasPermission = (

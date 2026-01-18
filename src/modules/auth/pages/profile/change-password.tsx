@@ -43,10 +43,10 @@ export default function ChangePassword() {
         },
         onError: (error) => {
           message.error(
-            error.response.data.message || "Failed to change password"
+            error.response.data.message || "Failed to change password",
           );
         },
-      }
+      },
     );
   };
 
@@ -54,6 +54,7 @@ export default function ChangePassword() {
     <div className="w-full mx-auto">
       <Card
         style={{ border: 0 }}
+        styles={{ header: { padding: "20px 0" }, body: { padding: "20px 0" } }}
         title={
           <div className="flex items-center gap-2">
             <Button
@@ -90,7 +91,6 @@ export default function ChangePassword() {
             <Input.Password
               prefix={<LockOutlined className="text-gray-400" />}
               placeholder="Enter current password"
-              size="large"
             />
           </Form.Item>
 
@@ -105,7 +105,6 @@ export default function ChangePassword() {
             <Input.Password
               prefix={<LockOutlined className="text-gray-400" />}
               placeholder="Enter new password"
-              size="large"
             />
           </Form.Item>
 
@@ -122,8 +121,8 @@ export default function ChangePassword() {
                   }
                   return Promise.reject(
                     new Error(
-                      "The new passwords that you entered do not match!"
-                    )
+                      "The new passwords that you entered do not match!",
+                    ),
                   );
                 },
               }),
@@ -132,7 +131,6 @@ export default function ChangePassword() {
             <Input.Password
               prefix={<LockOutlined className="text-gray-400" />}
               placeholder="Confirm new password"
-              size="large"
             />
           </Form.Item>
 
@@ -143,14 +141,10 @@ export default function ChangePassword() {
                 htmlType="submit"
                 icon={<SaveOutlined />}
                 loading={isPending}
-                size="large"
               >
                 Change Password
               </Button>
-              <Button
-                size="large"
-                onClick={() => navigate("/dashboard/profile")}
-              >
+              <Button onClick={() => navigate("/dashboard/profile")}>
                 Cancel
               </Button>
             </Space>

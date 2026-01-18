@@ -22,15 +22,17 @@ import { useNavigate } from "react-router";
 import type { UploadFile, UploadProps } from "antd/es/upload/interface";
 import { useProfile } from "../../hooks/use-auth";
 import { useUpdateUser } from "../../hooks/use-user";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function EditProfile() {
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const { data, isLoading, refetch } = useProfile();
   const { mutate: updateUser, isPending: isUpdating } = useUpdateUser();
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [previewImage, setPreviewImage] = useState<string | undefined>(
-    undefined
+    undefined,
   );
 
   const user = data?.data;
@@ -70,11 +72,13 @@ export default function EditProfile() {
         onSuccess: () => {
           message.success("Profile updated successfully");
           refetch();
+          // Revalidate the users
+          queryClient.invalidateQueries({ queryKey: ["users"] });
         },
         onError: (error) => {
           message.error(error.message || "Failed to update profile");
         },
-      }
+      },
     );
   };
 
@@ -128,6 +132,7 @@ export default function EditProfile() {
         </div>
       }
       style={{ border: "none" }}
+      styles={{ header: { padding: "20px 0" }, body: { padding: "20px 0" } }}
     >
       <Form
         form={form}

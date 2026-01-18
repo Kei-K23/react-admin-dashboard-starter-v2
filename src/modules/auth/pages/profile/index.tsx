@@ -123,15 +123,6 @@ export default function Profile() {
               {user.twoFactorEnabled ? "Enabled" : "Disabled"}
             </Tag>
           </Descriptions.Item>
-          <Descriptions.Item label="Password">
-            <Button
-              type="link"
-              className="p-0"
-              onClick={() => navigate("change-password")}
-            >
-              Change Password
-            </Button>
-          </Descriptions.Item>
         </Descriptions>
       ),
     },

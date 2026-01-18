@@ -1,26 +1,43 @@
-import { Card, Form, Input, Button, Space, Row, Col, App, Spin } from "antd";
-import { ArrowLeftOutlined, SaveOutlined } from "@ant-design/icons";
-import { useNavigate } from "react-router";
 import {
-  useCreateRole,
+  Card,
+  Form,
+  Input,
+  Button,
+  Space,
+  Row,
+  Col,
+  App,
+  Spin,
+} from "antd";
+import { ArrowLeftOutlined, SaveOutlined } from "@ant-design/icons";
+import { useNavigate, useParams } from "react-router";
+import {
+  useGetRoleById,
+  useUpdateRole,
   useGetAllPermissions,
 } from "../../hooks/use-role-and-permissions";
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 import type { PermissionClass } from "../../services/role-and-permissions.service";
 import { GroupedPermissionsSelector } from "../../components/grouped-permissions-selector";
 
 const { TextArea } = Input;
 
-export default function RolesPermissionsCreate() {
+export default function RolesPermissionsEdit() {
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
   const { message } = App.useApp();
   const [form] = Form.useForm();
 
-  const { mutate: createRole, isPending: isCreating } = useCreateRole();
+  // Hooks
+  const useRole = useGetRoleById(id || "");
+  const { data: roleData, isLoading: isLoadingRole } = useRole({ id: id || "" });
+  
+  const { mutate: updateRole, isPending: isUpdating } = useUpdateRole();
   const { data: permissionsData, isLoading: isLoadingPermissions } =
     useGetAllPermissions();
 
   const permissions = permissionsData?.data || [];
+  const role = roleData?.data;
 
   // Group permissions by module
   const groupedPermissions = useMemo(() => {
@@ -34,30 +51,47 @@ export default function RolesPermissionsCreate() {
     return grouped;
   }, [permissions]);
 
+  // Set initial values when role data is loaded
+  useEffect(() => {
+    if (role) {
+      const currentPermissionIds = role.rolePermissions.map(rp => rp.permissionId);
+      form.setFieldsValue({
+        name: role.name,
+        description: role.description,
+        permissionIds: currentPermissionIds,
+      });
+    }
+  }, [role, form]);
+
   const onFinish = (values: {
     name: string;
     description: string;
     permissionIds: string[];
   }) => {
-    createRole(
+    if (!id) return;
+    
+    updateRole(
       {
+        id,
         name: values.name,
         description: values.description,
         permissionIds: values.permissionIds || [],
       },
       {
         onSuccess: () => {
-          message.success("Role created successfully");
+          message.success("Role updated successfully");
           navigate("/dashboard/roles-permissions");
         },
         onError: (error) => {
-          message.error(error.message || "Failed to create role");
+          message.error(error.message || "Failed to update role");
         },
       },
     );
   };
 
-  if (isLoadingPermissions) {
+  const isLoading = isLoadingRole || isLoadingPermissions;
+
+  if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-100">
         <Spin size="large" />
@@ -76,7 +110,7 @@ export default function RolesPermissionsCreate() {
             icon={<ArrowLeftOutlined />}
             onClick={() => navigate("/dashboard/roles-permissions")}
           />
-          <span>Create New Role</span>
+          <span>Edit Role</span>
         </Space>
       }
     >
@@ -84,7 +118,6 @@ export default function RolesPermissionsCreate() {
         form={form}
         layout="vertical"
         onFinish={onFinish}
-        initialValues={{ permissionIds: [] }}
       >
         <Row gutter={24}>
           <Col xs={24} lg={10}>
@@ -116,9 +149,9 @@ export default function RolesPermissionsCreate() {
                   type="primary"
                   htmlType="submit"
                   icon={<SaveOutlined />}
-                  loading={isCreating}
+                  loading={isUpdating}
                 >
-                  Create Role
+                  Save Changes
                 </Button>
                 <Button
                   onClick={() => navigate("/dashboard/roles-permissions")}

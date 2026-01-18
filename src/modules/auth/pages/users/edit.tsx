@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Form,
   Input,
@@ -11,6 +11,8 @@ import {
   Col,
   Space,
   Select,
+  Switch,
+  Spin,
 } from "antd";
 import {
   UserOutlined,
@@ -18,37 +20,64 @@ import {
   SaveOutlined,
   ArrowLeftOutlined,
 } from "@ant-design/icons";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import type { UploadFile, UploadProps } from "antd/es/upload/interface";
-import { useCreateUser } from "../../hooks/use-user";
+import { useGetUserById, useUpdateUser } from "../../hooks/use-user";
 import { useGetAllRoles } from "../../hooks/use-role-and-permissions";
-import { useQueryClient } from "@tanstack/react-query";
 
-export default function UserCreate() {
-  const queryClient = useQueryClient();
+export default function UserEdit() {
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+
   const [form] = Form.useForm();
-  const { mutate: createUser, isPending: isCreating } = useCreateUser();
+  const { mutate: updateUser, isPending: isUpdating } = useUpdateUser();
+
   const rolesParams = { getAll: "true" };
   const useRoles = useGetAllRoles(rolesParams);
   const { data: rolesData, isLoading: isLoadingRoles } = useRoles(rolesParams);
+
+  const { data: userData, isLoading: isLoadingUser } = useGetUserById(id || "")(
+    { id: id || "" },
+  );
+
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [previewImage, setPreviewImage] = useState<string | undefined>(
     undefined,
   );
+
+  useEffect(() => {
+    if (userData?.data) {
+      const user = userData.data;
+      form.setFieldsValue({
+        fullName: user.fullName,
+        email: user.email,
+        phone: user.phone,
+        roleId: user.roleId,
+        isBanned: user.isBanned,
+      });
+      if (user.profileImageUrl) {
+        setPreviewImage(user.profileImageUrl);
+      }
+    }
+  }, [userData, form]);
 
   const onFinish = (values: {
     fullName: string;
     email: string;
     phone: string;
     roleId: string;
+    isBanned: boolean;
     password?: string;
   }) => {
+    if (!id) return;
+
     const formData = new FormData();
     formData.append("fullName", values.fullName);
     formData.append("email", values.email);
     formData.append("phone", values.phone);
     formData.append("roleId", values.roleId);
+    formData.append("isBanned", String(values.isBanned));
+
     if (values.password) {
       formData.append("password", values.password);
     }
@@ -57,18 +86,18 @@ export default function UserCreate() {
       formData.append("profileImage", fileList[0].originFileObj);
     }
 
-    createUser(formData, {
-      onSuccess: () => {
-        message.success("User created successfully");
-        navigate("/dashboard/users");
-
-        // Revalidate the users
-        queryClient.invalidateQueries({ queryKey: ["users"] });
+    updateUser(
+      { id, data: formData },
+      {
+        onSuccess: () => {
+          message.success("User updated successfully");
+          navigate("/dashboard/users");
+        },
+        onError: (error) => {
+          message.error(error.message || "Failed to update user");
+        },
       },
-      onError: (error) => {
-        message.error(error.message || "Failed to create user");
-      },
-    });
+    );
   };
 
   const uploadProps: UploadProps = {
@@ -95,6 +124,14 @@ export default function UserCreate() {
     accept: "image/*",
   };
 
+  if (isLoadingUser) {
+    return (
+      <div className="flex justify-center items-center min-h-100">
+        <Spin size="large" />
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto">
       <Card
@@ -107,7 +144,7 @@ export default function UserCreate() {
               icon={<ArrowLeftOutlined />}
               onClick={() => navigate("/dashboard/users")}
             />
-            <span>Create New User</span>
+            <span>Edit User</span>
           </div>
         }
       >
@@ -158,12 +195,12 @@ export default function UserCreate() {
               <Form.Item
                 name="password"
                 label="Password"
+                extra="Leave blank to keep current password"
                 rules={[
-                  { required: true, message: "Please enter password" },
                   { min: 6, message: "Password must be at least 6 characters" },
                 ]}
               >
-                <Input.Password placeholder="Enter password" />
+                <Input.Password placeholder="Enter new password" />
               </Form.Item>
 
               <Form.Item
@@ -191,15 +228,23 @@ export default function UserCreate() {
                 />
               </Form.Item>
 
+              <Form.Item name="isBanned" label="Status" valuePropName="checked">
+                <Switch
+                  checkedChildren="Banned"
+                  unCheckedChildren="Active"
+                  className="bg-gray-300"
+                />
+              </Form.Item>
+
               <Form.Item className="mt-8">
                 <Space>
                   <Button
                     type="primary"
                     htmlType="submit"
                     icon={<SaveOutlined />}
-                    loading={isCreating}
+                    loading={isUpdating}
                   >
-                    Create User
+                    Save Changes
                   </Button>
                   <Button onClick={() => navigate("/dashboard/users")}>
                     Cancel

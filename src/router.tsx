@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router";
 import Home from "./pages/Home";
 import MainDashboardLayout from "./layouts/MainDashboardLayout";
 import UserCreate from "./modules/auth/pages/users/create";
+import UserEdit from "./modules/auth/pages/users/edit";
 import RolesPermissionsCreate from "./modules/auth/pages/roles-permissions/create";
 import Users from "./modules/auth/pages/users";
 import RolesPermissions from "./modules/auth/pages/roles-permissions";
@@ -10,6 +11,7 @@ import Logout from "./modules/auth/pages/logout";
 import Profile from "./modules/auth/pages/profile";
 import EditProfile from "./modules/auth/pages/profile/edit";
 import ChangePassword from "./modules/auth/pages/profile/change-password";
+import RolesPermissionsEdit from "./modules/auth/pages/roles-permissions/edit";
 
 export const router = createBrowserRouter([
   {
@@ -53,12 +55,20 @@ export const router = createBrowserRouter([
             element: <UserCreate />,
           },
           {
+            path: "/dashboard/users/edit/:id",
+            element: <UserEdit />,
+          },
+          {
             path: "/dashboard/roles-permissions",
             element: <RolesPermissions />,
           },
           {
             path: "/dashboard/roles-permissions/create",
             element: <RolesPermissionsCreate />,
+          },
+          {
+            path: "/dashboard/roles-permissions/edit/:id",
+            element: <RolesPermissionsEdit />,
           },
         ],
       },

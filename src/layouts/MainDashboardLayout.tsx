@@ -67,7 +67,7 @@ export default function MainDashboardLayout() {
     // Helper to find title in config
     const findTitle = (
       path: string,
-      items: NavigationItem[]
+      items: NavigationItem[],
     ): string | undefined => {
       for (const item of items) {
         if (item.path === path) return item.title;

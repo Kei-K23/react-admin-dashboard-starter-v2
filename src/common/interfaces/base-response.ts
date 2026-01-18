@@ -15,5 +15,5 @@ export interface ResponseGetAllMetaData {
 export interface BaseGetAllFilter {
   page?: string;
   limit?: string;
-  getAll?: "true" | "false" | undefined;
+  getAll?: "true" | "false" | string | undefined;
 }
