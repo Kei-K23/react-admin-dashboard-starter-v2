@@ -17,7 +17,7 @@ import {
   ACCESS_TOKEN_KEY,
   REFRESH_TOKEN_KEY,
 } from "../../../../common/constraints";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 const { Text, Title } = Typography;
 
 export default function Login() {
@@ -35,10 +35,10 @@ export default function Login() {
       {
         onSuccess: ({ data }) => {
           const accessExpires = new Date(
-            Date.now() + ms(data?.data?.accessTokenExpiresAt as StringValue)
+            Date.now() + ms(data?.data?.accessTokenExpiresAt as StringValue),
           );
           const refreshExpires = new Date(
-            Date.now() + ms(data?.data?.refreshTokenExpiresAt as StringValue)
+            Date.now() + ms(data?.data?.refreshTokenExpiresAt as StringValue),
           );
 
           Cookies.set(ACCESS_TOKEN_KEY, data?.data?.accessToken, {
@@ -69,7 +69,7 @@ export default function Login() {
             content: response.data.message,
           });
         },
-      }
+      },
     );
   };
 
@@ -125,7 +125,7 @@ export default function Login() {
                   <Form.Item name="remember" valuePropName="checked" noStyle>
                     <Checkbox>Remember me</Checkbox>
                   </Form.Item>
-                  <a href="">Forgot password</a>
+                  <Link to="/forgot-password">Forgot password</Link>
                 </Flex>
               </Form.Item>
 

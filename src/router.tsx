@@ -10,6 +10,7 @@ import RolesPermissions from "./modules/auth/pages/roles-permissions";
 import AuditLogs from "./modules/auth/pages/audit-logs";
 import ActivityLogs from "./modules/auth/pages/activity-logs";
 import Login from "./modules/auth/pages/login";
+import ForgotPassword from "./modules/auth/pages/forgot-password";
 import Logout from "./modules/auth/pages/logout";
 import Profile from "./modules/auth/pages/profile";
 import EditProfile from "./modules/auth/pages/profile/edit";
@@ -25,6 +26,14 @@ export const router = createBrowserRouter([
     element: (
       <GuestGuard>
         <Login />
+      </GuestGuard>
+    ),
+  },
+  {
+    path: "/forgot-password",
+    element: (
+      <GuestGuard>
+        <ForgotPassword />
       </GuestGuard>
     ),
   },
