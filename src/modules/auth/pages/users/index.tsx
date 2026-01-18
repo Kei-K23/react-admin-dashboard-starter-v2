@@ -48,7 +48,6 @@ export default function Users() {
     ...(roleId ? { roleId } : {}),
     ...(isBanned ? { isBanned } : {}),
   } as Record<string, string | number | boolean>;
-  console.log(usersParams, " here call ");
 
   const useUsersQuery = useGetAllUsers(usersParams);
   const { data: usersData, isLoading, refetch } = useUsersQuery(usersParams);

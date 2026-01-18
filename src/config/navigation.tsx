@@ -32,6 +32,16 @@ export const navigationConfig: NavigationItem[] = [
         title: "Roles & Permissions",
         path: "/dashboard/roles-permissions",
       },
+      {
+        key: "auditLogs",
+        title: "Audit Logs",
+        path: "/dashboard/audit-logs",
+      },
+      {
+        key: "activityLogs",
+        title: "Activity Logs",
+        path: "/dashboard/activity-logs",
+      },
     ],
   },
 ];

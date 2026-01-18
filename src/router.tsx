@@ -4,14 +4,16 @@ import MainDashboardLayout from "./layouts/MainDashboardLayout";
 import UserCreate from "./modules/auth/pages/users/create";
 import UserEdit from "./modules/auth/pages/users/edit";
 import RolesPermissionsCreate from "./modules/auth/pages/roles-permissions/create";
+import RolesPermissionsEdit from "./modules/auth/pages/roles-permissions/edit";
 import Users from "./modules/auth/pages/users";
 import RolesPermissions from "./modules/auth/pages/roles-permissions";
+import AuditLogs from "./modules/auth/pages/audit-logs";
+import ActivityLogs from "./modules/auth/pages/activity-logs";
 import Login from "./modules/auth/pages/login";
 import Logout from "./modules/auth/pages/logout";
 import Profile from "./modules/auth/pages/profile";
 import EditProfile from "./modules/auth/pages/profile/edit";
 import ChangePassword from "./modules/auth/pages/profile/change-password";
-import RolesPermissionsEdit from "./modules/auth/pages/roles-permissions/edit";
 
 export const router = createBrowserRouter([
   {
@@ -69,6 +71,14 @@ export const router = createBrowserRouter([
           {
             path: "/dashboard/roles-permissions/edit/:id",
             element: <RolesPermissionsEdit />,
+          },
+          {
+            path: "/dashboard/audit-logs",
+            element: <AuditLogs />,
+          },
+          {
+            path: "/dashboard/activity-logs",
+            element: <ActivityLogs />,
           },
         ],
       },

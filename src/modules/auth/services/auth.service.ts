@@ -82,24 +82,31 @@ export interface GetAllAuditLogParams extends BaseGetAllFilter {
 
 export const authService = {
   getProfile: () => apiClient.get<GetProfileResponse>("/auth/profile"),
+
   login: (data: { email: string; password: string }) =>
     apiClient.post<LoginResponse>("/auth/login", data),
+
   refresh: (refreshToken: string) =>
     apiClient.post<RefreshResponse>("/auth/refresh", { refreshToken }),
+
   getAllAuditLogs: (params: GetAllAuditLogParams) =>
     apiClient.get<GetAllAuditLogResponse>("/activity-logs", params),
+
   forgotPasswordRequest: (data: { email: string }) =>
     apiClient.post<ForgotPasswordRequestResponse>(
       "/auth/otp/send/forgot-password",
-      data
+      data,
     ),
+
   forgotPasswordVerify: (data: { userId: string; code: string }) =>
     apiClient.post<ForgotPasswordVerifyResponse>(
       "/auth/otp/verify/forgot-password",
-      data
+      data,
     ),
+
   resetPassword: (data: { accessToken: string; newPassword: string }) =>
     apiClient.post<ResetPasswordResponse>("/auth/reset-password", data),
+
   changePassword: (data: { currentPassword: string; newPassword: string }) =>
     apiClient.patch<ChangePasswordResponse>("/auth/change-password", data),
 };
